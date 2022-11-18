@@ -14,4 +14,3 @@ ds$log_pvalue <- log(ds$pvalue)
 
 # update dataset
 POST('http://127.0.0.1:8999/api', body = toJSON(ds), encode = 'raw')
-

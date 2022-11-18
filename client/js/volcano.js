@@ -1,6 +1,13 @@
 import {neighbours} from './neighbours.js'
 import {mouseover} from './mouseover.js'
 
+function expandRange(r, p) {
+    // margin
+    const m = p * (r[1] - r[0])
+
+    return [r[0] - m, r[1] + m]
+}
+
 class State {
     constructor() {
         this.yTransform = d => d.log_pvalue,
@@ -20,7 +27,7 @@ class State {
       this.selected = o
     }
 
-    hover_point(selected) {
+    hoverPoint(selected) {
 
         // mark point
         const points = d3.select('#graph-svg')
@@ -33,6 +40,11 @@ class State {
             (d == this.selected ? this.colours.selected :
                this.colours.neutral))
 
+        this.showNames(selected)
+
+    }
+
+    showNames(hover) {
         // show name
         d3.select('#graph-svg')
             .selectAll('text.point-label')
@@ -40,12 +52,11 @@ class State {
             .join('text.point-label')
             .attr('x', d => this.xScale(this.xTransform(d)))
             .attr('y', d => this.yScale(this.yTransform(d)))
-            .text(d => selected == d ? d.name : '')
+            .text(d => hover == d | d == this.selected ? d.name : '')
 
     }
 
-    click_point(selected) {
-
+    clickPoint(selected) {
         this.selected = selected 
         // mark point
         const points = d3.select('#graph-svg')
@@ -54,6 +65,7 @@ class State {
         points.transition('newColours')
         .attr('fill', d => d.name == selected.name ?
             state.colours.selected : state.colours.neutral)
+        this.showNames()
 
         // update side bar
         const sidebar = d3.select('#sidebar')
@@ -74,8 +86,14 @@ class State {
         this.ds = rows
 
         // get limits
-        const effect_size_range = d3.extent(rows, this.xTransform)
-        const pvalue_range = d3.extent(rows, this.yTransform)
+        const effect_size_range = expandRange(
+            d3.extent(rows, this.xTransform),
+            0.07
+        )
+        const pvalue_range = expandRange(
+            d3.extent(rows, this.yTransform),
+            0.07
+        )
 
         // config
         const w = 650
@@ -126,7 +144,6 @@ class State {
     makeGraph () {
         const sub = this.ds
         const svg = d3.select('#graph-svg')
-        const mouseover_f = mouseover(this)
 
         // add points
         d3.select('#graph-points')
@@ -139,8 +156,12 @@ class State {
             .attr('cy', d => this.yScale(this.yTransform(d)))
             .attr('r', 10)
             .attr('fill', d => this.colours.neutral)
-            .on('click', (e, d) => this.click_point(d))
-            .on('mouseover', (e, d) => this.hover_point(d))
+            .on('click', (e, d) => this.clickPoint(d))
+            .on('mouseenter', (e, d) => this.hoverPoint(d))
+            .on('mouseleave', () => {
+                this.showNames({})
+                this.hoverPoint({})
+            })
 
         d3.select('#graph-points')
             .selectAll('text.point-label')
@@ -152,14 +173,40 @@ class State {
             .attr('x', d => this.xScale(this.xTransform(d)))
             .attr('y', d => this.yScale(this.yTransform(d)))
             .attr('text-anchor', 'middle')
-            .on('click', (e, d) => this.click_point(d))
+            .on('click', (e, d) => this.clickPoint(d))
+            .on('mouseenter', (e, d) => this.hoverPoint(d))
+            .on('mouseleave', () => {
+                this.showNames({})
+                this.hoverPoint({})
+            })
+
     }
 
+    selectCocktail(e) {
+        const query = document.querySelector('#searchbar').value
+        if (this.loaded & e.key === "Enter") {
+            const match = this.ds.filter(d => d.name == query)
+            if (match) {
+                console.log(match)
+                this.clickPoint(match[0]) 
+            }
+        } else if (this.loaded) {
+            //this.updateGraph(query.toLowerCase())
+        }
+    }
 }
+
+// search bar ---------------------
+
 
 // script ------------------
 
 const state = new State()
+
+d3.select('#searchbar')
+    .on('keyup', (e) => state.selectCocktail(e))
+
+// load data from API ---------------------
 const response = await fetch('api');
 const ds = await response.json() 
 state.initializeGraph(ds)
