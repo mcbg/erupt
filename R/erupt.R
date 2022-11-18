@@ -14,6 +14,7 @@ R_binary <- function () {
 #' @export
 init <- function() {
   handle <- spawn_process(R_binary(), c('--no-save'))
+  process_write(handle, 'getwd()\n')
   process_write(handle, 'erupt::init_server()\n')
   return(handle)
 }

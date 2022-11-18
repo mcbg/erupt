@@ -80,6 +80,24 @@ class State {
         sidebar.append('p')
             .html('<b>effect size</b>&nbsp;' + selected.effect_size)
 
+        // confidence intervals
+        d3.select('#confint')
+            .selectAll('.ci')
+            .remove()
+
+        d3.select('#confint')
+            .selectAll('.ci')
+            .data(this.ds.filter(d => d == this.selected), this.keyLambda)
+        .enter()
+            .append('line')
+            .attr('class', 'ci')
+            .style("stroke", this.colours.selected)
+            .style("stroke-width", 5)
+            .attr('x1', d => this.xScale(d.low))
+            .attr('x2', d => this.xScale(d.high))
+            .attr('y1', d => this.yScale(this.yTransform(d)))
+            .attr('y2', d => this.yScale(this.yTransform(d)))
+
     }
 
     initializeGraph(rows) {
@@ -122,9 +140,12 @@ class State {
             .attr('width', '100%')
             .attr('viewBox', "0 0 " + w + " " + h)
 
-        // add group for points
+        // add groups
         svg.append('g')
           .attr('id', 'graph-points')
+
+        svg.append('g')
+          .attr('id', 'confint')
 
         // add axes
         svg.append('g')
