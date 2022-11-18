@@ -1,0 +1,91 @@
+<!DOCTYPE html> <html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> volcano </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Data visualisation of cocktails using principal component analysis (PCA).">
+  <meta name="keywords" content="dataviz, data visualisation, d3, statistics, data science">
+  <meta name="author" content="Michael Galanakis">
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <link rel="stylesheet" href="bootstrap-4.5.2-dist/css/bootstrap.min.css"/>
+  <style>
+    .axis path {
+        fill: #ddd;
+        stroke: #ddd;
+    }
+    
+    .tick line {
+        fill: #ddd;
+        stroke: #ddd;
+    }
+
+    .tick text {
+        fill: #bbb;
+    }
+
+    .cocktail-stat {
+        display: block;
+        line-height: 1 !important;
+    }
+
+    .cocktail-label {
+        cursor: default;
+    }
+
+    .neighbour {
+        cursor: default;
+    }
+
+    h1 {
+      text-justify: center;
+    }
+
+    .header-mark::after {
+      margin-bottom: 1rem;
+      margin-top: 0.5rem;
+      display: block;
+      content: '';
+      width: 2.5rem;
+      height: 0.4rem;
+      background-color: #e5e5e5;
+
+    }
+
+    .header {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+          <h2 class="header-mark">volcano plot</h2>
+          <input id="cocktail-search" class="w-100 form-control mr-2" placeholder="Search for a cocktail"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="graph text-center"></div>
+      </div>
+      <div class="col-md-4">
+        <div id="sidebar" class="h-100">
+          <div class="h-100 row pt-5">
+            <div class="col">
+              <p class="text-center">
+                CLICK POINT TO VIEW NEIGHBOURS
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8 about">
+        <h2 class="header-mark">About this dashboard</h2>
+        <p>
+        put table over analytes here
+        </p>
+      </div>
+    </div>
+ <script type="module" src="./js/volcano.js"></script>
+</body>
+</html>
