@@ -1,10 +1,6 @@
-import {neighbours} from './neighbours.js'
-import {mouseover} from './mouseover.js'
-
 function expandRange(r, p) {
     // margin
     const m = p * (r[1] - r[0])
-
     return [r[0] - m, r[1] + m]
 }
 
@@ -20,33 +16,27 @@ class State {
             selected: "#d83015",
             loading: "#DDD"
         }
+        this.selected = { name: '___TEMP___' }
     }
 
-    // select highlighted analyte
-    setSelected(o) {
-      this.selected = o
-    }
 
-    hoverPoint(selected) {
-
+    hoverPoint(hover) {
         // mark point
         const points = d3.select('#graph-svg')
             .selectAll('circle.point')
-            .data(state.ds, state.keyLambda)
+            .data(this.ds, this.keyLambda)
 
         points.join('circle.point')
-            .attr('fill', d => d.name == selected.name ?
-            this.colours.hover : 
-            (d == this.selected ? this.colours.selected :
-               this.colours.neutral))
+            .attr('fill', d => d.name == this.selected.name ? this.colours.selected : 
+                (d == hover ? this.colours.hover: this.colours.neutral))
 
-        this.showNames(selected)
+        this.showNames(hover)
 
     }
 
     showNames(hover) {
         // show name
-        d3.select('#graph-svg')
+        d3.select('#graph-labels')
             .selectAll('text.point-label')
             .data(this.ds, state.keyLambda)
             .join('text.point-label')
@@ -61,8 +51,8 @@ class State {
         // mark point
         const points = d3.select('#graph-svg')
             .selectAll('circle.point')
-            .data(state.ds, state.keyLambda)
-        points.transition('newColours')
+            .data(this.ds, this.keyLambda)
+        points.join('circle.point')
         .attr('fill', d => d.name == selected.name ?
             state.colours.selected : state.colours.neutral)
         this.showNames()
@@ -141,11 +131,9 @@ class State {
             .attr('viewBox', "0 0 " + w + " " + h)
 
         // add groups
-        svg.append('g')
-          .attr('id', 'graph-points')
-
-        svg.append('g')
-          .attr('id', 'confint')
+        svg.append('g').attr('id', 'graph-points')
+        svg.append('g').attr('id', 'confint')
+        svg.append('g').attr('id', 'graph-labels')
 
         // add axes
         svg.append('g')
@@ -184,7 +172,7 @@ class State {
                 this.hoverPoint({})
             })
 
-        d3.select('#graph-points')
+        d3.select('#graph-labels')
             .selectAll('text.point-label')
             .data(sub, this.keyLambda)
             .enter()
