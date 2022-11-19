@@ -5,6 +5,7 @@ date: "2022-11-18"
 ---
 
 ```{r setup, include=FALSE}
+library(erupt)
 library(subprocess)
 hnd <- init()
 process_read(hnd)
