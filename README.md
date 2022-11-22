@@ -7,3 +7,6 @@
 - add function that sends data from limma/lm fit to api
 - add QQ plot to side bar
 - put query results on top of gray points (like marked point)
+- fix errors with low pvalues being converted to zeroes when going 
+  from R to javascript
+
