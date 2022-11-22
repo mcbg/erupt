@@ -6,4 +6,4 @@
 - add severity curve in sidebar
 - add function that sends data from limma/lm fit to api
 - add QQ plot to side bar
-- add suggestions to search bar
+- put query results on top of gray points (like marked point)

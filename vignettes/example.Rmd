@@ -14,16 +14,10 @@ list.dirs(system.file(package = 'erupt'))
 ```
 
 ```{r setup, include=FALSE}
+library(httr)
+library(jsonlite)
 set.seed(999)
-ds <- data.frame(name = seq_len(200), effect_size = rnorm(200))
-ll <- lapply(ds$effect_size, function(b) {
-  t.test(rnorm(20), b + rnorm(20))
-})
-
-ds$pvalue <- sapply(ll, function(x) x$p.value)
-ds$low <- sapply(ll, function(x) x$conf.int[1])
-ds$high <- sapply(ll, function(x) x$conf.int[2])
-ds$log_pvalue <- log(ds$pvalue)
+ds <- sim()
 
 # update dataset
 POST('http://127.0.0.1:8999/api', body = toJSON(ds), encode = 'raw')

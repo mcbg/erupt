@@ -11,7 +11,7 @@ class State {
         this.keyLamda = d => d.name,
         this.colours = {
             neutral: "#9d9393",
-            neighbour: "#f6ac8f",
+            query: "#f6ac8f",
             hover: "#EEE",
             selected: "#d83015",
             loading: "#DDD"
@@ -207,16 +207,33 @@ class State {
 
     }
 
-    selectCocktail(e) {
+    processQuery(e) {
         const query = document.querySelector('#searchbar').value
         if (this.loaded & e.key === "Enter") {
             const match = this.ds.filter(d => d.name == query)
             if (match) {
-                console.log(match)
                 this.clickPoint(match[0]) 
             }
-        } else if (this.loaded) {
-            //this.updateGraph(query.toLowerCase())
+        } else if (this.loaded & query.length >= 2) {
+            const isMatch = d => d.name
+                    .toString()
+                    .toLowerCase()
+                    .includes(query.toString())
+
+            // mark points that match query
+            d3.select('#graph-points')
+                .selectAll('circle.point')
+                .data(this.ds)
+                .transition()
+                .attr('fill', d => isMatch(d) ? this.colours.query : this.colours.neutral)
+
+            // view labels that match query
+            const labs = d3.select('#graph-labels')
+                .selectAll('text.point-label')
+                .data(this.ds, this.keyLambda)
+
+            labs.transition()
+                .text(d => isMatch(d) ? d.name : '')
         }
     }
 }
@@ -229,7 +246,7 @@ class State {
 const state = new State()
 
 d3.select('#searchbar')
-    .on('keyup', (e) => state.selectCocktail(e))
+    .on('keyup', (e) => state.processQuery(e))
 
 // load data from API ---------------------
 const response = await fetch('api');
