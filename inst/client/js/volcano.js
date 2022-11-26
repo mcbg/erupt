@@ -1,11 +1,14 @@
+import * as lt from './listeners.js'
+
 function expandRange(r, p) {
     // margin
     const m = p * (r[1] - r[0])
     return [r[0] - m, r[1] + m]
 }
 
-class State {
-    constructor() {
+class GraphController {
+    constructor(clickListeners) {
+        this.clickListeners = clickListeners 
         this.yTransform = d => d.log_pvalue,
         this.xTransform = d => d.effect_size,
         this.keyLamda = d => d.name,
@@ -48,62 +51,7 @@ class State {
 
     clickPoint(selected) {
         this.selected = selected 
-        // mark point
-        const points = d3.select('#graph-svg')
-            .selectAll('circle.point')
-            .data(this.ds, this.keyLambda)
-        points.join('circle.point')
-        .attr('fill', d => d.name == selected.name ?
-            state.colours.selected : state.colours.neutral)
-        this.showNames()
-
-        // update side bar
-        const sidebar = d3.select('#sidebar')
-        sidebar.html("") // delete all
-
-        sidebar.append('h2')
-            .attr('class', 'text-center')
-            .text(selected.name)
-        
-        sidebar.append('p')
-            .html('<b>p-value</b>&nbsp;' + selected.pvalue)
-        sidebar.append('p')
-            .html('<b>effect size</b>&nbsp;' + selected.effect_size)
-
-        // confidence intervals
-        d3.select('#confint')
-            .selectAll('.ci')
-            .remove()
-
-        const marked = d3.select('#confint')
-            .selectAll('.ci')
-            .data(this.ds.filter(d => d == this.selected), this.keyLambda)
-            .enter()
-            .append('g')
-            .attr('class', 'ci')
-
-        console.log('click')
-        marked.append('circle')
-            .attr('class', 'marked-point')
-            .attr('cx', d => this.xScale(this.xTransform(d)))
-            .attr('cy', d => this.yScale(this.yTransform(d)))
-            .attr('r', 10)
-            .attr('fill', d => this.colours.selected)
-            .on('click', (e, d) => this.clickPoint(d))
-            .on('mouseenter', (e, d) => this.hoverPoint(d))
-            .on('mouseleave', () => {
-                this.showNames({})
-                this.hoverPoint({})
-            })
-
-         marked.append('line')
-             .style("stroke", this.colours.selected)
-             .style("stroke-width", 5)
-             .attr('x1', d => this.xScale(d.low))
-             .attr('x2', d => this.xScale(d.high))
-             .attr('y1', d => this.yScale(this.yTransform(d)))
-             .attr('y2', d => this.yScale(this.yTransform(d)))
-
+        this.clickListeners.forEach(x => x.update(state))
     }
 
     initializeGraph(rows) {
@@ -238,17 +186,25 @@ class State {
     }
 }
 
-// search bar ---------------------
 
 
 // script ------------------
+//
+const click_listeners = [
+    new lt.MarkPointCI(),
+    new lt.MarkPoint(),
+    new lt.VolcanoSidebar
+]
 
-const state = new State()
+const state = new GraphController(click_listeners)
+
+// search bar ---------------------
 
 d3.select('#searchbar')
     .on('keyup', (e) => state.processQuery(e))
 
 // load data from API ---------------------
+
 const response = await fetch('api');
 const ds = await response.json() 
 state.initializeGraph(ds)

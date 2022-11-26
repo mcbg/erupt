@@ -9,4 +9,7 @@
 - put query results on top of gray points (like marked point)
 - fix errors with low pvalues being converted to zeroes when going 
   from R to javascript
-
+- refracture out query listeners
+- implement multiple studies version of graph
+- make listener factory that fx. takes string 'qq' and returns 
+  QQ plot to side bar listener.

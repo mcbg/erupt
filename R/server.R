@@ -20,6 +20,22 @@ init_server <- function() {
   ds <- sim()
   api <- APIstate$new(ds)
   client_path <- file.path(system.file(package = 'erupt'), 'client')
+
+  # plumber
+  pr() %>%
+    pr_static('/', client_path) %>%
+    pr_post('/api', handler = api$set_ds) %>%
+    pr_get('/api', handler = api$get_ds, serializer = serializer_json()) %>%
+    pr_run(port=8999, docs = FALSE)
+}
+
+#' @export
+init_server_dev <- function() {
+  # state
+  ds <- sim()
+  api <- APIstate$new(ds)
+  client_path <- file.path('./inst/client')
+
   # plumber
   pr() %>%
     pr_static('/', client_path) %>%
