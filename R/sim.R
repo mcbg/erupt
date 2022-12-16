@@ -1,6 +1,10 @@
 #' @export
 sim <- function() {
-  ds <- data.frame(name = seq_len(200), theta = rnorm(200))
+  ds_pre <- data.frame(name = seq_len(200), theta = rnorm(200))
+  ds <- rbind(
+    cbind(ds_pre, study = 'A'),
+    cbind(ds_pre, study = 'B')
+  )
   ll <- lapply(ds$theta, function(b) {
     t.test(rnorm(20), b + rnorm(20))
   })

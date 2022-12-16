@@ -8,17 +8,18 @@ date: "2022-11-18"
 library(erupt)
 library(subprocess)
 hnd <- init()
+hnd <- init_server_dev()
 process_read(hnd)
 process_kill(hnd)
+init_server_dev()
 list.dirs(system.file(package = 'erupt'))
 ```
 
 ```{r setup, include=FALSE}
-library(httr)
-library(jsonlite)
 set.seed(999)
 ds <- sim()
 
 # update dataset
 POST('http://127.0.0.1:8999/api', body = toJSON(ds), encode = 'raw')
+erupt_send(ds)
 ```
