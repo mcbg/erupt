@@ -7,8 +7,8 @@ function expandRange(r, p) {
 }
 
 class GraphController {
-    constructor(clickListeners) {
-        this.clickListeners = clickListeners 
+    constructor(listeners) {
+        this.listeners = listeners 
         this.yTransform = d => d.log_pvalue,
         this.xTransform = d => d.effect_size,
         this.keyLamda = d => d.name,
@@ -51,7 +51,7 @@ class GraphController {
 
     clickPoint(selected) {
         this.selected = selected 
-        this.clickListeners.forEach(x => x.update(state))
+        this.listeners.forEach(x => x.click(this))
     }
 
     initializeGraph(rows) {
@@ -111,11 +111,41 @@ class GraphController {
             .call(yAxis)
 
         this.loaded = true
+        this.listeners.forEach(x => x.init(this))
         this.makeGraph()
+
+    }
+    
+    updateGraph() {
+        console.log('update')
+        const sub = this.ds.filter(d => {
+            const xx = this.listeners.every(x => x.sub(d))
+            return xx
+        })
+        console.log(sub[0])
+        // add points
+        d3.select('#graph-points')
+            .selectAll('circle.point')
+            .data(sub, this.keyLambda)
+            .join('circle')
+            .attr('class', 'point')
+            .attr('cx', d => this.xScale(this.xTransform(d)))
+            .attr('cy', d => this.yScale(this.yTransform(d)))
+            .attr('r', 8)
+            .attr('fill', d => this.colours.neutral)
+            .on('click', (e, d) => this.clickPoint(d))
+            .on('mouseenter', (e, d) => this.hoverPoint(d))
+            .on('mouseleave', () => {
+                this.showNames({})
+                this.hoverPoint({})
+            })
     }
 
     makeGraph () {
-        const sub = this.ds
+        const sub = this.ds.filter(d => {
+            const xx = this.listeners.every(x => x.sub(d))
+            return xx
+        })
         const svg = d3.select('#graph-svg')
 
         // add points
@@ -193,7 +223,8 @@ class GraphController {
 const click_listeners = [
     new lt.MarkPointCI(),
     new lt.MarkPoint(),
-    new lt.VolcanoSidebar
+    new lt.VolcanoSidebar(),
+    new lt.MultipleStudies()
 ]
 
 const state = new GraphController(click_listeners)

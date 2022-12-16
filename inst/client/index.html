@@ -1,7 +1,7 @@
 <!DOCTYPE html> <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title> volcano </title>
+  <title> ERUPT xx </title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Data visualisation of cocktails using principal component analysis (PCA).">
   <meta name="keywords" content="dataviz, data visualisation, d3, statistics, data science">
@@ -13,7 +13,12 @@
         fill: #ddd;
         stroke: #ddd;
     }
-    
+
+    .study {
+        font-size: 30;
+    }
+
+
     .tick line {
         fill: #ddd;
         stroke: #ddd;
@@ -79,11 +84,12 @@
           </div>
         </div>
       </div>
-      <div class="col-md-8 about">
-        <h2 class="header-mark">About this dashboard</h2>
+      <div class="col-md-8">
+        <h2 class="header-mark">Controls</h2>
         <p>
-        put table over analytes here
+            TODO: put table over analytes here
         </p>
+        <div id = 'controls'></div>
       </div>
     </div>
   <script type="module" src="./js/volcano.js"></script>
