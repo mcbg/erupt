@@ -72,7 +72,7 @@ export class VolcanoSidebar {
         sidebar.append('h2')
             .attr('class', 'text-center')
             .text(state.selected.name)
-        
+
         sidebar.append('p')
             .html('<b>p-value</b>&nbsp;' + state.selected.pvalue)
         sidebar.append('p')
@@ -126,7 +126,7 @@ export class MultipleStudies {
             .append('button')
             .attr('type', 'button')
             .attr('class', d => {
-               return d == this.current_study ? 'btn study mr-2 btn-secondary' : 
+               return d == this.current_study ? 'btn study mr-2 btn-secondary' :
                     'btn study mr-2 btn-primary'
             })
             .html(d => d)

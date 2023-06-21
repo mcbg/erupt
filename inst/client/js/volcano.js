@@ -8,7 +8,7 @@ function expandRange(r, p) {
 
 class GraphController {
     constructor(listeners) {
-        this.listeners = listeners 
+        this.listeners = listeners
         this.yTransform = d => d.log_pvalue,
         this.xTransform = d => d.effect_size,
         this.keyLamda = d => d.name,
@@ -30,7 +30,7 @@ class GraphController {
             .data(this.ds, this.keyLambda)
 
         points.join('circle.point')
-            .attr('fill', d => d.name == this.selected.name ? this.colours.selected : 
+            .attr('fill', d => d.name == this.selected.name ? this.colours.selected :
                 (d == hover ? this.colours.hover: this.colours.neutral))
 
         this.showNames(hover)
@@ -50,7 +50,7 @@ class GraphController {
     }
 
     clickPoint(selected) {
-        this.selected = selected 
+        this.selected = selected
         this.listeners.forEach(x => x.click(this))
     }
 
@@ -115,7 +115,7 @@ class GraphController {
         this.makeGraph()
 
     }
-    
+
     updateGraph() {
         console.log('update')
         const sub = this.ds.filter(d => {
@@ -187,16 +187,17 @@ class GraphController {
 
     processQuery(e) {
         const query = document.querySelector('#searchbar').value
+        const isMatch = d => d.name
+                .toString()
+                .toLowerCase()
+                .includes(query.toString())
+
         if (this.loaded & e.key === "Enter") {
-            const match = this.ds.filter(d => d.name == query)
+            const match = this.ds.filter(isMatch)
             if (match) {
-                this.clickPoint(match[0]) 
+                this.clickPoint(match[0])
             }
         } else if (this.loaded & query.length >= 2) {
-            const isMatch = d => d.name
-                    .toString()
-                    .toLowerCase()
-                    .includes(query.toString())
 
             // mark points that match query
             d3.select('#graph-points')
@@ -237,5 +238,5 @@ d3.select('#searchbar')
 // load data from API ---------------------
 
 const response = await fetch('api');
-const ds = await response.json() 
+const ds = await response.json()
 state.initializeGraph(ds)
